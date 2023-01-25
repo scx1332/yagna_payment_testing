@@ -1,1 +1,1 @@
-# yagna_payment_testing
+# golem-rpc-provider

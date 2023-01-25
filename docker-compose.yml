@@ -1,0 +1,10 @@
+services:
+  mumbai_provider_1:
+    environment:
+      - HTTPS_PORT=15601
+      - HTTP_PORT=15501
+    build: golem_service_provider
+    user: root
+    restart: unless-stopped
+    env_file:
+      - node_conf_1.env
