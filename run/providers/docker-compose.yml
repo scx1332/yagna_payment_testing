@@ -1,0 +1,11 @@
+services:
+  prov1:
+    build: ../../golem_service_provider
+    env_file:
+      - common_config.env
+      - prov1.env
+  prov2:
+    build: ../../golem_service_provider
+    env_file:
+      - common_config.env
+      - prov2.env
