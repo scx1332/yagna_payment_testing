@@ -1,0 +1,17 @@
+services:
+  yagna_requestor_node:
+    build: ../../../yagna_requestor_node
+    volumes:
+      - "./yagna_dir:/root/.local/share/yagna"
+    environment:
+      - GSB_URL=tcp://0.0.0.0:7464
+      - YAGNA_API_URL=http://0.0.0.0:7465
+      - YAGNA_APPKEY=${YAGNA_APPKEY}
+      - YAGNA_AUTOCONF_ID_SECRET=${YAGNA_AUTOCONF_ID_SECRET}
+      - YAGNA_AUTOCONF_APPKEY=${YAGNA_APPKEY}
+      - YA_NET_TYPE=central
+    command: run.sh
+    ports:
+      - "${YAGNA_MON_PORT}:3333"
+      - 7464:7464
+      - 7465:7465
