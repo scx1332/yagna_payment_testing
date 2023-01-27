@@ -1,11 +1,11 @@
 FROM rust as build
 RUN apt-get update
 RUN apt-get install cmake openssl musl-tools -y
-RUN git clone --single-branch --branch scx1332/payment_testing https://github.com/golemfactory/yagna.git yagna
+RUN git clone --single-branch --branch master https://github.com/golemfactory/yagna.git yagna
 RUN cd yagna && cargo build --release --all --target x86_64-unknown-linux-musl --features static-openssl
 RUN git clone --single-branch --branch scx1332/trying_to_run2 https://github.com/golemfactory/ya-runtime-http-auth.git ya-runtime-http-auth
-RUN cd ya-runtime-http-auth && cargo build --release --target x86_64-unknown-linux-musl
-RUN cd ya-runtime-http-auth && cargo build --release -p ya-http-proxy --bin ya-http-proxy --features="bin" --target x86_64-unknown-linux-musl
+RUN cd ya-runtime-http-auth && cargo build --release
+RUN cd ya-runtime-http-auth && cargo build --release -p ya-http-proxy --bin ya-http-proxy --features="bin"
 RUN mkdir privatecerts
 RUN cd privatecerts && openssl req -nodes -x509 -newkey rsa:4096 -keyout server.key -out server.cert -sha256 -days 3650 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
 
@@ -20,8 +20,8 @@ RUN mkdir /privatecerts
 COPY --from=0 /yagna/target/x86_64-unknown-linux-musl/release/yagna /runtime
 COPY --from=0 /yagna/target/x86_64-unknown-linux-musl/release/ya-provider /runtime
 COPY --from=0 /yagna/target/x86_64-unknown-linux-musl/release/exe-unit /runtime/plugins
-COPY --from=0 /ya-runtime-http-auth/target/x86_64-unknown-linux-musl/release/ya-http-proxy /runtime/plugins/ya-runtime-bor
-COPY --from=0 /ya-runtime-http-auth/target/x86_64-unknown-linux-musl/release/ya-runtime-http-auth /runtime/plugins/ya-runtime-bor
+COPY --from=0 /ya-runtime-http-auth/target/release/ya-http-proxy /runtime/plugins/ya-runtime-bor
+COPY --from=0 /ya-runtime-http-auth/target/release/ya-runtime-http-auth /runtime/plugins/ya-runtime-bor
 COPY --from=0 /privatecerts/server.cert /privatecerts/server.cert
 COPY --from=0 /privatecerts/server.key /privatecerts/server.key
 COPY run.sh /runtime

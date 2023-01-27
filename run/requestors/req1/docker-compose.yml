@@ -1,4 +1,18 @@
 services:
+  dummy_requestor:
+    build: ../../../dummy_requestor
+    environment:
+      - YAGNA_API_URL=http://yagna_requestor_node:7465
+      - YAGNA_MARKET_URL=http://yagna_requestor_node:7465/market-api/v1
+      - YAGNA_ACTIVITY_URL=http://yagna_requestor_node:7465/activity-api/v1
+      - YAGNA_PAYMENT_URL=http://yagna_requestor_node:7465/payment-api/v1
+      - YAGNA_MONITOR_URL=http://yagna_requestor_node:3333
+      - YAGNA_APPKEY=${YAGNA_APPKEY}
+      - SUBNET=${SUBNET}
+      - NUM_INSTANCES=${NUM_INSTANCES}
+    command: run.sh
+    ports:
+      - "${ETHNODE_PORT}:8545"
   yagna_requestor_node:
     build: ../../../yagna_requestor_node
     volumes:
@@ -11,7 +25,3 @@ services:
       - YAGNA_AUTOCONF_APPKEY=${YAGNA_APPKEY}
       - YA_NET_TYPE=central
     command: run.sh
-    ports:
-      - "${YAGNA_MON_PORT}:3333"
-      - 7464:7464
-      - 7465:7465
