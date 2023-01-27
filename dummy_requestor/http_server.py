@@ -5,10 +5,6 @@ import logging
 
 import aiohttp
 from aiohttp import web
-from sqlalchemy import func
-from sqlalchemy.future import select
-from sqlalchemy.orm import Session
-from model import AppInfo, SerializationMode, LocalJSONEncoder, ProviderInstance
 from service import Ethnode
 
 routes = web.RouteTableDef()

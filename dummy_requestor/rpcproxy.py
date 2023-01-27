@@ -6,8 +6,6 @@ import time
 import asyncio
 from aiohttp import ClientTimeout
 
-from model import DaoRequest
-
 
 class RpcProxyException(Exception):
     pass

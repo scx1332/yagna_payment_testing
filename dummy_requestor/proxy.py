@@ -14,12 +14,10 @@ from yapapi.services import Cluster
 from yapapi.agreements_pool import AgreementsPool
 
 from http_server import aiohttp_app, routes
-from model import DaoRequest
 from rpcproxy import RpcProxy
 from service import Ethnode
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from client_info import ClientInfo, ClientCollection, RequestType
 
 INSTANCES_RETRY_INTERVAL_SEC = 1
 INSTANCES_RETRY_TIMEOUT_SEC = 30
@@ -62,18 +60,6 @@ class EthnodeProxy:
         async with self._request_lock:
             self._request_count += 1
             return instances[self._request_count % len(instances)]
-
-
-    async def _handle_instance_request(self, instance: Ethnode, data) -> DaoRequest:
-        address = instance.addresses[random.randint(0, len(instance.addresses) - 1)]
-        logger.debug(f"Using: {instance} / {address}")
-        return await self._handle_request(address, data)
-
-    @staticmethod
-    async def _handle_request(address: str, data) -> DaoRequest:
-        proxy = RpcProxy()
-        r = await proxy.proxy_call(address, data)
-        return r
 
     async def _hello(self, request: web.Request) -> web.Response:
         # test response

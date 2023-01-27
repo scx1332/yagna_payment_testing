@@ -9,12 +9,10 @@ import string
 from typing import Optional, List
 import uuid
 
-from sqlalchemy.orm import Session
 from yapapi.props import constraint, inf
 from yapapi.payload import Payload
 from yapapi.services import Service, ServiceState
 
-from model import ProviderInstance
 from strategy import BadNodeFilter
 from time_range import NodeRunningTimeRange
 
