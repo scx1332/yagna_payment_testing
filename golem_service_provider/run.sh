@@ -1,19 +1,19 @@
 #! /bin/bash
 
-export YAGNA_AUTOCONF_APPKEY="q-$RANDOM-$RANDOM"
-export YAGNA_APPKEY="$YAGNA_AUTOCONF_APPKEY"
+export YAGNA_AUTOCONF_APPKEY=${YAGNA_AUTOCONF_APPKEY}
+export YAGNA_APPKEY=${YAGNA_AUTOCONF_APPKEY}
 export NETWORK=${NETWORK:-rinkeby}
 export DATA_DIR=provider_dir
 export PROVIDER_LOG_DIR=provider_dir_logs
-export YAGNA_DATADIR=yagna_dir
-export SUBNET=${SUBNET:-polygon_proxy}
+export YAGNA_DATADIR=${YAGNA_DATADIR}
+export SUBNET=${SUBNET:-payment_testing_subnet}
 export NODE_NAME=${NODE_NAME:-polygon_proxy}
 export YA_PAYMENT_NETWORK=${NETWORK:-rinkeby}
 
 export HTTPS_PORT=${HTTPS_PORT:-1443}
 export HTTP_PORT=${HTTP_PORT:-1180}
 export SERVER_NAME=${SERVER_NAME:-bor-proxy-provider}
-export TARGET_PROXY=${TARGET_PROXY:-http://51.38.53.113:8545}
+export TARGET_PROXY=${TARGET_PROXY:-http://golem.network}
 export SERVICE_NAME=${SERVICE_NAME:-bor-service}
 export SERVICE_DESCRIPTION=${SERVICE_DESCRIPTION:-Bor service}
 
@@ -34,5 +34,7 @@ sleep 5
 ./yagna payment init --receiver --driver erc20 --network $NETWORK
 ./ya-provider run --max-simultaneous-agreements $MAX_AGREEMENTS --min-agreement-expiration $MIN_AGREEMENT_EXPIRATION
 
+echo "Waiting for 30 seconds before leaving the container..."
 sleep 30
+echo "Leaving the container..."
 
