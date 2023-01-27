@@ -25,3 +25,5 @@ services:
       - YAGNA_AUTOCONF_APPKEY=${YAGNA_APPKEY}
       - YA_NET_TYPE=central
     command: run.sh
+    ports:
+      - "${YAGNA_MON_PORT}:3333"
