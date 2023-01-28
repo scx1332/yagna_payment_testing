@@ -8,6 +8,8 @@ services:
       - YAGNA_PAYMENT_URL=http://yagna_requestor_node:7465/payment-api/v1
       - YAGNA_MONITOR_URL=http://yagna_requestor_node:3333
       - YAGNA_APPKEY=${YAGNA_APPKEY}
+      - RINKEBY_GETH_ADDR=${RINKEBY_GETH_ADDR}
+      - RINKEBY_TGLM_CONTRACT_ADDRESS=${RINKEBY_TGLM_CONTRACT_ADDRESS}
       - SUBNET=${SUBNET}
       - NUM_INSTANCES=${NUM_INSTANCES}
     command: run.sh
