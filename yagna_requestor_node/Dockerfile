@@ -6,7 +6,7 @@ ARG YAGNA_INCREMENTAL_BUILD_TOKEN=ae3f37c9-d95a-4375-9d87-43fbe0dd12dc
 # can be used to specify a branch or tag
 ARG YAGNA_BRANCH_OR_TAG=master
 # dev, release (use dev when build speed is more important than yagna speed)
-ARG YAGNA_BUILD_PROFILE=dev
+ARG YAGNA_BUILD_PROFILE=release
 # x86_64-unknown-linux-musl or x86_64-unknown-linux-gnu
 ARG YAGNA_BUILD_TARGET=x86_64-unknown-linux-musl
 # yagna additional features
