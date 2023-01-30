@@ -25,18 +25,20 @@ RUN git pull && git checkout ${YAGNA_BRANCH_OR_TAG}
 RUN rm rust-toolchain.toml
 # this step is to separate downloading dependencies from building greatly improving speed of rebuilds if build breaks
 RUN cargo fetch
+# override cargo config with provided one
+COPY yagna_cargo_config.toml .cargo/config
 # build yagna
 ARG YAGNA_BUILD_PROFILE
 ARG YAGNA_BUILD_TARGET
 ARG YAGNA_FEATURES
 RUN rustup target add ${YAGNA_BUILD_TARGET}
-RUN cargo build --profile ${YAGNA_BUILD_PROFILE} --target ${YAGNA_BUILD_TARGET} --features ${YAGNA_FEATURES}
+RUN cargo build --all --profile ${YAGNA_BUILD_PROFILE} --target ${YAGNA_BUILD_TARGET} --features ${YAGNA_FEATURES}
 # update for incremental builds
 ARG YAGNA_INCREMENTAL_BUILD_TOKEN
 RUN echo ${YAGNA_INCREMENTAL_BUILD_TOKEN} && git pull
-RUN cargo build --profile ${YAGNA_BUILD_PROFILE} --target ${YAGNA_BUILD_TARGET} --features ${YAGNA_FEATURES}
-# we have to write this ugly if because profile dev is mapped to debug
-
+RUN cargo build --all --profile ${YAGNA_BUILD_PROFILE} --target ${YAGNA_BUILD_TARGET} --features ${YAGNA_FEATURES}
+# map /build diretory to directory containing yagna binaries
+# we have to use this ugly "if" because profile dev is mapped to debug
 RUN if [ "${YAGNA_BUILD_PROFILE}" = "dev" ] ; then ln -s /yagna/target/${YAGNA_BUILD_TARGET}/debug /build ; else ln -s /yagna/target/${YAGNA_BUILD_TARGET}/${YAGNA_BUILD_PROFILE} /build ; fi
 
 
