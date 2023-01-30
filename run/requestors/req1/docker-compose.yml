@@ -24,15 +24,14 @@ services:
     volumes:
       - "./yagna_dir:/root/.local/share/yagna"
     environment:
-      # - GSB_URL=tcp://0.0.0.0:7464
-      # - YAGNA_API_URL=http://0.0.0.0:7465
+      - GSB_URL=tcp://0.0.0.0:7464
+      - YAGNA_API_URL=http://0.0.0.0:7465
       - YAGNA_APPKEY=${YAGNA_APPKEY}
       - YAGNA_AUTOCONF_ID_SECRET=${YAGNA_AUTOCONF_ID_SECRET}
       - YAGNA_AUTOCONF_APPKEY=${YAGNA_APPKEY}
-      # - RINKEBY_GETH_ADDR=${RINKEBY_GETH_ADDR}
-      # - RINKEBY_TGLM_CONTRACT_ADDRESS=${RINKEBY_TGLM_CONTRACT_ADDRESS}
+      - RINKEBY_GETH_ADDR=${RINKEBY_GETH_ADDR}
+      - RINKEBY_TGLM_CONTRACT_ADDRESS=${RINKEBY_TGLM_CONTRACT_ADDRESS}
       - YA_NET_TYPE=central
-      - YAGNA_DATADIR=yagna_dir
     command: run.sh
     ports:
       - "${YAGNA_MON_PORT}:3333"

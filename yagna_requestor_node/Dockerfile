@@ -48,8 +48,11 @@ ENV PATH=".:${PATH}"
 WORKDIR /yagna
 
 # download release yagna binaries
-COPY --from=yagna-build /build/yagna .
-COPY --from=yagna-build /build/gftp .
+COPY --from=yagna-build /build/yagna /usr/bin
+COPY --from=yagna-build /build/gftp /usr/bin
+COPY --from=yagna-build /build/ya-provider /usr/bin
+COPY --from=yagna-build /build/golemsp /usr/bin
+COPY --from=yagna-build /build/exe-unit /root/.local/lib/yagna/plugins/exe-unit
 
 # install python requirements for yagna_mon.py
 RUN pip install quart requests
