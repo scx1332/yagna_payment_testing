@@ -10,6 +10,7 @@ services:
     env_file:
       - common_config.env
       - prov1.env
+    command: ./run_provider.sh
   prov2:
     build:
       dockerfile: Dockerfile
@@ -21,3 +22,4 @@ services:
     env_file:
       - common_config.env
       - prov2.env
+    command: ./run_provider.sh
