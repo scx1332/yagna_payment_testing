@@ -42,8 +42,25 @@ RUN cargo build --all --profile ${YAGNA_BUILD_PROFILE} --target ${YAGNA_BUILD_TA
 RUN if [ "${YAGNA_BUILD_PROFILE}" = "dev" ] ; then ln -s /yagna/target/${YAGNA_BUILD_TARGET}/debug /build ; else ln -s /yagna/target/${YAGNA_BUILD_TARGET}/${YAGNA_BUILD_PROFILE} /build ; fi
 
 
-FROM python:3.9
-ENV PATH=".:${PATH}"
+FROM rust as ya-runtime-http-build
+RUN apt-get update
+RUN apt-get install cmake openssl musl-tools -y
+RUN git clone --single-branch --branch main https://github.com/golemfactory/ya-runtime-http-auth.git ya-runtime-http-auth
+WORKDIR /ya-runtime-http-auth
+RUN cargo build --release
+RUN cargo build --release -p ya-http-proxy --bin ya-http-proxy --features="bin"
+# generate self signed certificate for use in proxy
+RUN mkdir /privatecerts
+WORKDIR /privatecerts
+RUN openssl req -nodes -x509 -newkey rsa:4096 -keyout server.key -out server.cert -sha256 -days 3650 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+
+
+FROM python:3.11
+RUN apt-get update
+# install common helpful tools
+RUN apt-get install -y curl vim jq net-tools htop
+# install python requirements for yagna_mon.py
+RUN pip install quart requests
 
 WORKDIR /yagna
 
@@ -53,13 +70,17 @@ COPY --from=yagna-build /build/gftp /usr/bin
 COPY --from=yagna-build /build/ya-provider /usr/bin
 COPY --from=yagna-build /build/golemsp /usr/bin
 COPY --from=yagna-build /build/exe-unit /root/.local/lib/yagna/plugins/exe-unit
+RUN mkdir /root/.local/lib/yagna/plugins/ya-runtime-bor
+RUN mkdir /privatecerts
+COPY plugins /root/.local/lib/yagna/plugins
+COPY ya-provider /root/.local/share/ya-provider
+COPY --from=ya-runtime-http-build /ya-runtime-http-auth/target/release/ya-http-proxy /root/.local/lib/yagna/plugins/ya-runtime-bor
+COPY --from=ya-runtime-http-build /ya-runtime-http-auth/target/release/ya-runtime-http-auth /root/.local/lib/yagna/plugins/ya-runtime-bor
+COPY --from=ya-runtime-http-build /privatecerts/server.cert /privatecerts/server.cert
+COPY --from=ya-runtime-http-build /privatecerts/server.key /privatecerts/server.key
 
-# install python requirements for yagna_mon.py
-RUN pip install quart requests
-
-# run script + monitor
-COPY run.sh .
-RUN chmod +x run.sh
+COPY *.sh .
+RUN chmod +x *.sh
 
 COPY yagna_mon.py .
 
