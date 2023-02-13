@@ -12,6 +12,11 @@ ARG YAGNA_BUILD_TARGET=x86_64-unknown-linux-musl
 # yagna additional features
 ARG YAGNA_FEATURES=static-openssl
 
+
+ARG YA_RUNTIME_HTTP_GIT_CLONE_CACHE_TOKEN=ea312485-94c0-4a0b-aed8-a867227c09ae
+ARG YA_RUNTIME_OUTBOUND_GIT_CLONE_CACHE_TOKEN=3a826a24-3ada-4c48-bfaa-58d2714ba66e
+
+
 FROM rust as yagna-build
 #repeat ARGs to make them available in the next stage
 RUN apt-get update
@@ -45,7 +50,8 @@ RUN if [ "${YAGNA_BUILD_PROFILE}" = "dev" ] ; then ln -s /yagna/target/${YAGNA_B
 FROM rust as ya-runtime-http-build
 RUN apt-get update
 RUN apt-get install cmake openssl musl-tools -y
-RUN git clone --single-branch --branch main https://github.com/golemfactory/ya-runtime-http-auth.git ya-runtime-http-auth
+ARG YA_RUNTIME_HTTP_GIT_CLONE_CACHE_TOKEN
+RUN echo ${YA_RUNTIME_HTTP_GIT_CLONE_CACHE_TOKEN} && git clone --single-branch --branch main https://github.com/golemfactory/ya-runtime-http-auth.git ya-runtime-http-auth
 WORKDIR /ya-runtime-http-auth
 RUN cargo build --release
 RUN cargo build --release -p ya-http-proxy --bin ya-http-proxy --features="bin"
@@ -55,6 +61,15 @@ WORKDIR /privatecerts
 RUN openssl req -nodes -x509 -newkey rsa:4096 -keyout server.key -out server.cert -sha256 -days 3650 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
 
 
+FROM rust as ya-runtime-outbound-gateway
+RUN apt-get update
+RUN apt-get install cmake openssl musl-tools -y
+ARG YA_RUNTIME_OUTBOUND_GIT_CLONE_CACHE_TOKEN
+RUN echo ${YA_RUNTIME_OUTBOUND_GIT_CLONE_CACHE_TOKEN} && git clone --single-branch --branch master https://github.com/golemfactory/ya-runtime-outbound-gateway.git ya-runtime-outbound-gateway
+WORKDIR /ya-runtime-outbound-gateway
+RUN cargo build --release -p ya-runtime-outbound-gateway
+
+
 FROM python:3.11
 RUN apt-get update
 # install common helpful tools
@@ -62,22 +77,24 @@ RUN apt-get install -y curl vim jq net-tools htop
 # install python requirements for yagna_mon.py
 RUN pip install quart requests
 
-WORKDIR /yagna
-
-# download release yagna binaries
-COPY --from=yagna-build /build/yagna /usr/bin
-COPY --from=yagna-build /build/gftp /usr/bin
-COPY --from=yagna-build /build/ya-provider /usr/bin
-COPY --from=yagna-build /build/golemsp /usr/bin
-COPY --from=yagna-build /build/exe-unit /root/.local/lib/yagna/plugins/exe-unit
-RUN mkdir /root/.local/lib/yagna/plugins/ya-runtime-bor
-RUN mkdir /privatecerts
 COPY plugins /root/.local/lib/yagna/plugins
 COPY ya-provider /root/.local/share/ya-provider
 COPY --from=ya-runtime-http-build /ya-runtime-http-auth/target/release/ya-http-proxy /root/.local/lib/yagna/plugins/ya-runtime-bor
 COPY --from=ya-runtime-http-build /ya-runtime-http-auth/target/release/ya-runtime-http-auth /root/.local/lib/yagna/plugins/ya-runtime-bor
 COPY --from=ya-runtime-http-build /privatecerts/server.cert /privatecerts/server.cert
 COPY --from=ya-runtime-http-build /privatecerts/server.key /privatecerts/server.key
+
+COPY --from=yagna-build /build/yagna /usr/bin
+COPY --from=yagna-build /build/gftp /usr/bin
+COPY --from=yagna-build /build/ya-provider /usr/bin
+COPY --from=yagna-build /build/golemsp /usr/bin
+COPY --from=yagna-build /build/exe-unit /root/.local/lib/yagna/plugins/exe-unit
+
+COPY --from=ya-runtime-outbound-gateway /ya-runtime-outbound-gateway/target/release/ya-runtime-outbound-gateway /root/.local/lib/yagna/plugins/ya-runtime-outbound-gateway/ya-runtime-outbound-gateway
+COPY --from=ya-runtime-outbound-gateway /ya-runtime-outbound-gateway/conf/ya-runtime-outbound-gateway.json /root/.local/lib/yagna/plugins/ya-runtime-outbound-gateway.json
+
+
+WORKDIR /yagna
 
 COPY *.sh .
 RUN chmod +x *.sh

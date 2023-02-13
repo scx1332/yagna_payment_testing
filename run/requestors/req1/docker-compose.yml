@@ -32,6 +32,6 @@ services:
       - RINKEBY_GETH_ADDR=${RINKEBY_GETH_ADDR}
       - RINKEBY_TGLM_CONTRACT_ADDRESS=${RINKEBY_TGLM_CONTRACT_ADDRESS}
       - YA_NET_TYPE=central
-    command: run.sh
+    command: ./run_requestor.sh
     ports:
       - "${YAGNA_MON_PORT}:3333"
