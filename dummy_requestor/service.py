@@ -92,10 +92,6 @@ class Ethnode(Service):
             self.fail()
             return
 
-        p = ProviderInstance(ethnode=self.db_id, provider_id=self.provider_id, provider_name=self.provider_name,
-                             node_expiry=self.node_expiry, status="starting")
-
-
         addr_str = "\n".join(self.addresses)
         print(f"Good addresses: \n{colors.green(addr_str)}\non {self.provider_name}")
 

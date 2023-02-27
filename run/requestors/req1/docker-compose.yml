@@ -7,9 +7,10 @@ services:
       - YAGNA_ACTIVITY_URL=http://yagna_requestor_node:7465/activity-api/v1
       - YAGNA_PAYMENT_URL=http://yagna_requestor_node:7465/payment-api/v1
       - YAGNA_MONITOR_URL=http://yagna_requestor_node:3333
-      - YAGNA_APPKEY=${YAGNA_APPKEY}
-      - SUBNET=${SUBNET}
+      - SUBNET=payment_testing_subnet2
       - NUM_INSTANCES=${NUM_INSTANCES}
+    env_file:
+      - yagna_req_config.env
     command: run.sh
     ports:
       - "${ETHNODE_PORT}:8545"
@@ -23,14 +24,11 @@ services:
         - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
     volumes:
       - "./yagna_dir:/root/.local/share/yagna"
+    env_file:
+      - yagna_req_config.env
     environment:
       - GSB_URL=tcp://0.0.0.0:7464
       - YAGNA_API_URL=http://0.0.0.0:7465
-      - YAGNA_APPKEY=${YAGNA_APPKEY}
-      - YAGNA_AUTOCONF_ID_SECRET=${YAGNA_AUTOCONF_ID_SECRET}
-      - YAGNA_AUTOCONF_APPKEY=${YAGNA_APPKEY}
-      - RINKEBY_GETH_ADDR=${RINKEBY_GETH_ADDR}
-      - RINKEBY_TGLM_CONTRACT_ADDRESS=${RINKEBY_TGLM_CONTRACT_ADDRESS}
       - YA_NET_TYPE=central
     command: ./run_requestor.sh
     ports:
