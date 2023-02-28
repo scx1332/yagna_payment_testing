@@ -23,3 +23,39 @@ services:
       - common_config.env
       - prov2.env
     command: ./run_provider.sh
+  prov3:
+    build:
+      dockerfile: Dockerfile
+      context: ../../yagna_requestor_node
+      args:
+        - YAGNA_BRANCH_OR_TAG=${YAGNA_BRANCH_OR_TAG}
+        - YAGNA_GIT_CLONE_CACHE_TOKEN=${YAGNA_GIT_CLONE_CACHE_TOKEN}
+        - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
+    env_file:
+      - common_config.env
+      - prov3.env
+    command: ./run_provider.sh
+  prov4:
+    build:
+      dockerfile: Dockerfile
+      context: ../../yagna_requestor_node
+      args:
+        - YAGNA_BRANCH_OR_TAG=${YAGNA_BRANCH_OR_TAG}
+        - YAGNA_GIT_CLONE_CACHE_TOKEN=${YAGNA_GIT_CLONE_CACHE_TOKEN}
+        - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
+    env_file:
+      - common_config.env
+      - prov4.env
+    command: ./run_provider.sh
+  prov5:
+    build:
+      dockerfile: Dockerfile
+      context: ../../yagna_requestor_node
+      args:
+        - YAGNA_BRANCH_OR_TAG=${YAGNA_BRANCH_OR_TAG}
+        - YAGNA_GIT_CLONE_CACHE_TOKEN=${YAGNA_GIT_CLONE_CACHE_TOKEN}
+        - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
+    env_file:
+      - common_config.env
+      - prov5.env
+    command: ./run_provider.sh

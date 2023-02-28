@@ -65,6 +65,7 @@ class Ethnode(Service):
         self.failed = True
 
     async def start(self):
+        print(f"Starting {self.provider_name}...")
         if self.stopped:
             return
 
@@ -73,18 +74,13 @@ class Ethnode(Service):
 
         script = self._ctx.new_script()
 
-        self.username = self.generate_username()
-        self.password = self.generate_password(16)
-
-        user_future = script.run("user", "add", self.username, self.password)
         service_future = script.run("service", "info")
 
         yield script
 
         try:
-            user = json.loads((await user_future).stdout)
-            assert "createdAt" in user, colors.red("Could not create a user")
             service = json.loads((await service_future).stdout)
+            print(f"Service info: {service}")
         except Exception as e:
             print(
                 colors.red(f"{type(e).__name__ + ': ' + str(e)}, blacklisting {self.provider_name}")
@@ -118,6 +114,8 @@ class Ethnode(Service):
             print(colors.red(f"Activity failed: {self}, restarting..."))
         elif self.is_expired:
             print(colors.red(f"Node expired: {self}, restarting..."))
+        else:
+            print(colors.red(f"Activity stopped for unknown reason: {self}, restarting..."))
 
         self.set_expiry()
         self._ctx = None

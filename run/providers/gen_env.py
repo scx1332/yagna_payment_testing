@@ -6,7 +6,7 @@ import secrets
 import string
 from eth_account import Account
 
-for prov_name in ["prov1", "prov2", "prov3"]:
+for prov_name in ["prov1", "prov2", "prov3", "prov4", "prov5"]:
     env_file = f"{prov_name}.env"
     with open(env_file, "w") as f:
         random_name = ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase) for _ in range(10))

@@ -1,4 +1,9 @@
 services:
+  centralnet:
+    build:
+      dockerfile: Dockerfile
+      context: ../../../centralnet
+    command: ./run_centralnet.sh
   prov1:
     build:
       dockerfile: Dockerfile
@@ -39,6 +44,7 @@ services:
       - YAGNA_MONITOR_URL=http://yagna_req:3333
       - SUBNET=payment_testing_subnet2
     env_file:
+      - common_config.env
       - yagna_req_config.env
     command: run.sh
 
