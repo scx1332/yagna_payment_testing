@@ -13,7 +13,6 @@ from ya_activity.exceptions import ApiException
 from yapapi.services import ServiceState
 from yapapi import Golem
 
-from proxy import EthnodeProxy
 from service import Ethnode, EthnodePayload
 from strategy import BadNodeFilter
 from time_range import NodeRunningTimeRange
@@ -52,7 +51,7 @@ async def main(
     # monitor_task = asyncio.create_task(test_connections_loop())
 
     async with Golem(
-            budget=100000,
+            budget=10,
             payment_driver=payment_driver,
             payment_network=payment_network,
             subnet_tag=subnet_tag,
@@ -61,8 +60,8 @@ async def main(
         print_env_info(golem)
         expiration = datetime.now(timezone.utc) + STARTING_TIMEOUT + EXPIRATION_MARGIN + timedelta(seconds=running_time)
 
-        proxy = EthnodeProxy(local_port, False)
-        await proxy.run()
+        # proxy = EthnodeProxy(local_port, False)
+        # await proxy.run()
 
         print(f"Local server listening on:\nhttp://localhost:{local_port}")
 
@@ -77,7 +76,7 @@ async def main(
             expiration=expiration,
         )
 
-        proxy.set_cluster(ethnode_cluster)
+        #proxy.set_cluster(ethnode_cluster)
 
         def available(cluster):
             return any(inst.state == ServiceState.running for inst in cluster.instances)

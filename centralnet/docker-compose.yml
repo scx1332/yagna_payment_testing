@@ -1,0 +1,10 @@
+services:
+  centralnet:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - YA_RUNTIME_OUTBOUND_GIT_CLONE_CACHE_TOKEN=${YA_RUNTIME_OUTBOUND_GIT_CLONE_CACHE_TOKEN:-1}
+    command: ./run_centralnet.sh
+    ports:
+      - "15758:15758"

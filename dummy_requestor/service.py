@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from datetime import datetime, timezone, timedelta
 import colors
 from dataclasses import dataclass
@@ -8,6 +9,7 @@ import requests
 import string
 from typing import Optional, List
 import uuid
+import logging
 
 from yapapi.props import constraint, inf
 from yapapi.payload import Payload
@@ -16,6 +18,9 @@ from yapapi.services import Service, ServiceState
 from strategy import BadNodeFilter
 from time_range import NodeRunningTimeRange
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(sys.stderr))
 
 @dataclass
 class EthnodePayload(Payload):
@@ -47,6 +52,7 @@ class Ethnode(Service):
             password: Optional[str] = None,
     ):
         super().__init__()
+        print(f"Creating service Ethnode...")
         self.uuid = str(uuid.uuid4())
         self.db_id = -1
         self.provider_db_id = -1
@@ -65,7 +71,7 @@ class Ethnode(Service):
         self.failed = True
 
     async def start(self):
-        print(f"Starting {self.provider_name}...")
+        logger.info(f"Starting {self.provider_name}...")
         if self.stopped:
             return
 
@@ -80,16 +86,11 @@ class Ethnode(Service):
 
         try:
             service = json.loads((await service_future).stdout)
-            print(f"Service info: {service}")
+            logger.info(f"Service info: {service}")
         except Exception as e:
-            print(
-                colors.red(f"{type(e).__name__ + ': ' + str(e)}, blacklisting {self.provider_name}")
-            )
+            logger.error(f"Failed to get service info: {e}")
             self.fail()
-            return
 
-        addr_str = "\n".join(self.addresses)
-        print(f"Good addresses: \n{colors.green(addr_str)}\non {self.provider_name}")
 
     @property
     def is_ready(self) -> bool:
@@ -111,11 +112,11 @@ class Ethnode(Service):
 
     async def reset(self):
         if self.failed:
-            print(colors.red(f"Activity failed: {self}, restarting..."))
+            logger.info(f"Activity failed: {self}, restarting...")
         elif self.is_expired:
-            print(colors.red(f"Node expired: {self}, restarting..."))
+            logger.info(f"Node expired: {self}, restarting...")
         else:
-            print(colors.red(f"Activity stopped for unknown reason: {self}, restarting..."))
+            logger.info(f"Activity stopped for unknown reason: {self}, restarting...")
 
         self.set_expiry()
         self._ctx = None
