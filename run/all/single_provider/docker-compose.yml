@@ -38,7 +38,6 @@ services:
       - YAGNA_PAYMENT_URL=http://yagna_req:7465/payment-api/v1
       - YAGNA_MONITOR_URL=http://yagna_req:3333
       - SUBNET=payment_testing_subnet2
-      - NUM_INSTANCES=${NUM_INSTANCES}
     env_file:
       - yagna_req_config.env
     command: run.sh
