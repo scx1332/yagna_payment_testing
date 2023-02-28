@@ -51,7 +51,7 @@ async def main(
     # monitor_task = asyncio.create_task(test_connections_loop())
 
     async with Golem(
-            budget=10,
+            budget=100000,
             payment_driver=payment_driver,
             payment_network=payment_network,
             subnet_tag=subnet_tag,
