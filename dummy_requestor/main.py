@@ -17,6 +17,12 @@ from service import Ethnode, EthnodePayload
 from strategy import BadNodeFilter
 from time_range import NodeRunningTimeRange
 from utils import print_env_info, run_golem_example
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(sys.stderr))
+
 
 # the timeout after we commission our service instances
 # before we abort this script
@@ -82,10 +88,10 @@ async def main(
             return any(inst.state == ServiceState.running for inst in cluster.instances)
 
         while not available(ethnode_cluster):
-            print(ethnode_cluster.instances)
+            logger.info(ethnode_cluster.instances)
             await asyncio.sleep(5)
 
-        print("Cluster started")
+        logger.info("Cluster started")
 
         # wait until Ctrl-C
 
@@ -111,7 +117,7 @@ async def main(
                     pass
 
             #print(ethnode_cluster.instances)
-            print(costs)
+            logger.info(costs)
             #print(state)
 
             try:
@@ -119,10 +125,8 @@ async def main(
             except (KeyboardInterrupt, asyncio.CancelledError):
                 break
 
-        print(colors.cyan("Stopping..."))
+        logger.info(colors.cyan("Stopping..."))
         # signal the instances not to restart
-
-        await proxy.stop()
 
         for instance in ethnode_cluster.instances:
             instance.stop()
