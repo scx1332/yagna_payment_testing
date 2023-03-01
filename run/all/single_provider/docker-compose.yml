@@ -42,7 +42,6 @@ services:
       - YAGNA_ACTIVITY_URL=http://yagna_req:7465/activity-api/v1
       - YAGNA_PAYMENT_URL=http://yagna_req:7465/payment-api/v1
       - YAGNA_MONITOR_URL=http://yagna_req:3333
-      - SUBNET=payment_testing_subnet2
     env_file:
       - common_config.env
       - yagna_req_config.env
