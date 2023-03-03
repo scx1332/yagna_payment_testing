@@ -1,0 +1,4 @@
+/yagna_dir
+/prov*.env
+/.env
+/yagna_req_config.env

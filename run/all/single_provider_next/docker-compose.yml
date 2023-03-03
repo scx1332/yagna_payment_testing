@@ -1,0 +1,49 @@
+services:
+  centralnet:
+    build:
+      dockerfile: Dockerfile
+      context: ../../../centralnet
+    command: ./run_centralnet.sh
+  prov1:
+    build:
+      dockerfile: Dockerfile
+      context: ../../../yagna_requestor_node
+      args:
+        - YAGNA_BRANCH_OR_TAG=${YAGNA_BRANCH_OR_TAG}
+        - YAGNA_GIT_CLONE_CACHE_TOKEN=${YAGNA_GIT_CLONE_CACHE_TOKEN}
+        - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
+    env_file:
+      - common_config.env
+      - prov1.env
+    command: ./run_provider.sh
+  yagna_req:
+    build:
+      dockerfile: Dockerfile
+      context: ../../../yagna_requestor_node
+      args:
+        - YAGNA_BRANCH_OR_TAG=${YAGNA_BRANCH_OR_TAG}
+        - YAGNA_GIT_CLONE_CACHE_TOKEN=${YAGNA_GIT_CLONE_CACHE_TOKEN}
+        - YAGNA_INCREMENTAL_BUILD_TOKEN=${YAGNA_INCREMENTAL_BUILD_TOKEN}
+    volumes:
+      - "./yagna_dir:/root/.local/share/yagna"
+    env_file:
+      - common_config.env
+      - yagna_req_config.env
+    environment:
+      - GSB_URL=tcp://0.0.0.0:7464
+      - YAGNA_API_URL=http://0.0.0.0:7465
+      - YA_NET_TYPE=central
+    command: ./run_requestor.sh
+  dummy_requestor:
+    build: ../../../dummy_requestor
+    environment:
+      - YAGNA_API_URL=http://yagna_req:7465
+      - YAGNA_MARKET_URL=http://yagna_req:7465/market-api/v1
+      - YAGNA_ACTIVITY_URL=http://yagna_req:7465/activity-api/v1
+      - YAGNA_PAYMENT_URL=http://yagna_req:7465/payment-api/v1
+      - YAGNA_MONITOR_URL=http://yagna_req:3333
+    env_file:
+      - common_config.env
+      - yagna_req_config.env
+    command: run.sh
+
