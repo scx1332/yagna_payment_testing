@@ -2,10 +2,12 @@
 
 export YAGNA_AUTOCONF_APPKEY=${YAGNA_AUTOCONF_APPKEY-q$RANDOM$RANDOM}
 export YAGNA_APPKEY=${YAGNA_AUTOCONF_APPKEY}
-export NETWORK=${NETWORK:-rinkeby}
+export PAYMENT_NETWORK=${PAYMENT_NETWORK:-rinkeby}
+export PAYMENT_DRIVER=${PAYMENT_DRIVER:-erc20}
 export SUBNET=${SUBNET:-payment_testing_subnet}
 export NODE_NAME=${NODE_NAME:-polygon_proxy}
-export YA_PAYMENT_NETWORK=${NETWORK:-rinkeby}
+export YA_PAYMENT_NETWORK=${PAYMENT_NETWORK}
+export YA_PAYMENT_DRIVER=${PAYMENT_DRIVER}
 
 export HTTPS_PORT=${HTTPS_PORT:-1443}
 export HTTP_PORT=${HTTP_PORT:-1180}
@@ -29,7 +31,7 @@ cp $YA_RUNTIME_BOR_DIR/services/bor-service-template.txt $YA_RUNTIME_BOR_DIR/ser
 yagna service run &
 sleep 5
 yagna id list
-yagna payment init --receiver --driver erc20 --network $NETWORK
+yagna payment init --receiver --driver erc20 --network $PAYMENT_NETWORK
 ya-provider run --max-simultaneous-agreements $MAX_AGREEMENTS --min-agreement-expiration $MIN_AGREEMENT_EXPIRATION
 
 echo "Waiting for 30 seconds before leaving the container..."

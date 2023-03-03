@@ -21,6 +21,4 @@ with open("yagna_req_config.env", "w") as f:
     random_app_key = ''.join(random.choice(string.digits) for _ in range(20))
     f.write(f"YAGNA_AUTOCONF_APPKEY={random_app_key}\n")
     f.write(f"YAGNA_APPKEY={random_app_key}\n")
-    f.write(f"RINKEBY_GETH_ADDR=http://polygongas.org:8546/web3/reqtest1\n")
-    f.write(f"RINKEBY_TGLM_CONTRACT_ADDRESS=0x3b80bF85867eE9b079322802A734c074e093328E\n")
-
+    f.write(f"YATESTNET_GETH_ADDR=http://polygongas.org:8546/web3/reqtest1\n")

@@ -12,6 +12,9 @@ payment_initialized = False
 
 yagna_app_key = os.getenv("YAGNA_APPKEY") or "q-24538-4939"
 
+payment_network = os.environ["PAYMENT_NETWORK"] or "rinkeby"
+payment_driver = os.environ["PAYMENT_DRIVER"] or "erc20"
+
 
 def check_me():
     endpoint = "http://127.0.0.1:7465/me"
@@ -23,7 +26,7 @@ def check_me():
 
 
 def init_sender():
-    command = "yagna payment init --sender"
+    command = f"yagna payment init --sender --driver {payment_driver} --network {payment_network}"
     print(f"Executing command {command}")
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -33,7 +36,7 @@ def init_sender():
 
 
 def testnet_fund():
-    command = "yagna payment fund"
+    command = f"yagna payment fund --driver {payment_driver} --network {payment_network}"
     print(f"Executing command {command}")
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -43,7 +46,7 @@ def testnet_fund():
 
 
 def check_payments():
-    command = f"yagna payment status --json"
+    command = f"yagna payment status --json --driver {payment_driver} --network {payment_network}"
     print(f"Executing command {command}")
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -106,7 +109,6 @@ def initialize_payments(max_tries: int):
             time.sleep(1.0)
             print(f"Initializing payments... (try no: {tries + 1})")
             init_sender()
-            return True
             break
         except Exception as ex:
             print(ex)

@@ -9,7 +9,7 @@ def get_current_directory_name():
 dir_name = get_current_directory_name()
 docker_name_req = f"{dir_name}-yagna_req-1"
 print(f"docker_name: {docker_name_req}")
-command = f"docker exec -it {docker_name_req} yagna payment status"
+command = f"docker exec -it {docker_name_req} yagna payment status --driver erc20 --network yatestnet"
 
 print(f"exec: {command}")
 os.system(command)
